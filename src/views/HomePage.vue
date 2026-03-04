@@ -19,10 +19,21 @@
       </div>
     </ion-content>
   </ion-page>
+  <IonButton @click="irParaTarefas">
+  Ir para Tarefas
+</IonButton>
 </template>
 
 <script setup lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { useIonRouter } from '@ionic/vue'
+import { IonButton } from '@ionic/vue'
+
+const router = useIonRouter()
+
+const irParaTarefas = () => {
+  router.push('/tarefas')
+}
 </script>
 
 <style scoped>
