@@ -1,29 +1,20 @@
 <template>
-  <IonPage>
-    <IonHeader>
-      <IonToolbar>
-        <IonTitle>Tarefas</IonTitle>
-      </IonToolbar>
-    </IonHeader>
 
-    <IonContent class="ion-padding">
-      <p>Minha nova página de tarefas 🚀</p>
-    </IonContent>
-  </IonPage>
+<ion-page>
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tarefas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  Página de Tarefas
+</ion-content>
+
+</ion-page>
 </template>
 
 <script setup lang="ts">
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent
-} from '@ionic/vue'
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
 </script>
-
-<style scoped>
-p {
-  font-size: 18px;
-}
-</style>
