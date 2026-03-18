@@ -1,96 +1,136 @@
+
 <template>
-<ion-page>
+<IonPage>
 
-<ion-header>
-  <ion-toolbar>
+  <IonHeader>
+    <IonToolbar>
+      <IonTitle>Mini App de Tarefas</IonTitle>
+    </IonToolbar>
+  </IonHeader>
 
-    <ion-buttons slot="start">
-      <ion-back-button default-href="/" />
-    </ion-buttons>
+  <IonContent class="ion-padding">
 
-    <ion-title>Tarefas</ion-title>
+    <!-- CARD NOVA TAREFA -->
+    <IonCard>
+      <IonCardHeader>
+        <IonCardTitle>Nova Tarefa</IonCardTitle>
+      </IonCardHeader>
 
-  </ion-toolbar>
-</ion-header>
+      <IonCardContent>
 
-<ion-content class="ion-padding">
+        <IonInput
+          label="Nome da tarefa"
+          label-placement="floating"
+          v-model="novaTarefa"
+          placeholder="Ex: Estudar Vue.js"
+          :clear-input="true"
+          :error-text="erroTarefa"
+          :class="{ 'ion-invalid ion-touched': erroTarefa }"
+        />
 
-  <!-- Campo para nova tarefa -->
+        <IonButton
+          expand="block"
+          color="primary"
+          fill="solid"
+          @click="adicionarTarefa"
+        >
+          <IonIcon :icon="addOutline" slot="start"/>
+          Adicionar
+        </IonButton>
 
-  <ion-item>
-    <ion-input
-      v-model="novaTarefa"
-      placeholder="Digite uma tarefa">
-    </ion-input>
-  </ion-item>
+      </IonCardContent>
+    </IonCard>
 
-  <ion-button expand="block" @click="adicionarTarefa">
-    Adicionar
-  </ion-button>
+    <!-- CARD LISTA -->
+    <IonCard>
 
-  <!-- Estado vazio -->
+      <IonCardHeader>
+        <IonCardTitle>
+          Minhas Tarefas ({{ tarefas.length }})
+        </IonCardTitle>
+      </IonCardHeader>
 
-  <p v-if="tarefas.length === 0">
-    Nenhuma tarefa cadastrada. Adicione a primeira!
-  </p>
+      <IonCardContent>
 
-  <!-- Lista de tarefas -->
+        <p v-if="!tarefas.length" class="ion-text-center ion-padding">
+          Nenhuma tarefa cadastrada.
+        </p>
 
-  <ion-list v-else>
+        <IonList v-else>
 
-    <ion-item v-for="(tarefa, index) in tarefas" :key="index">
+          <IonItem
+            v-for="(t, i) in tarefas"
+            :key="i"
+          >
+            <IonIcon
+              slot="start"
+              :icon="checkmarkCircleOutline"
+            />
 
-      <ion-label>
-        {{ tarefa }}
-      </ion-label>
+            <IonLabel>
+              {{ t }}
+            </IonLabel>
 
-      <ion-button
-        color="danger"
-        fill="clear"
-        @click="removerTarefa(index)">
-        Remover
-      </ion-button>
+            <IonButton
+              slot="end"
+              fill="clear"
+              color="danger"
+              @click="removerTarefa(i)"
+            >
+              <IonIcon :icon="trashOutline"/>
+            </IonButton>
 
-    </ion-item>
+          </IonItem>
 
-  </ion-list>
+        </IonList>
 
-</ion-content>
+      </IonCardContent>
 
-</ion-page>
+    </IonCard>
+
+  </IonContent>
+
+</IonPage>
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from "vue";
+
 import {
-IonPage,
-IonHeader,
-IonToolbar,
-IonTitle,
-IonContent,
-IonItem,
-IonInput,
-IonButton,
-IonList,
-IonLabel,
-IonButtons,
-IonBackButton
-} from '@ionic/vue'
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent
+} from "@ionic/vue";
 
-import { ref } from 'vue'
+import { addOutline, trashOutline, checkmarkCircleOutline } from "ionicons/icons";
 
-const novaTarefa = ref('')
-const tarefas = ref<string[]>([])
+const novaTarefa = ref("");
+const tarefas = ref<string[]>([]);
+
+const erroTarefa = computed(() =>
+  !novaTarefa.value.trim() ? "Campo obrigatório" : ""
+);
 
 const adicionarTarefa = () => {
+  if (!novaTarefa.value.trim()) return;
 
-  if (novaTarefa.value.trim() === '') return
+  tarefas.value.push(novaTarefa.value);
+  novaTarefa.value = "";
+};
 
-  tarefas.value.push(novaTarefa.value)
-
-  novaTarefa.value = ''
-}
-
-const removerTarefa = (index:number) => {
-  tarefas.value.splice(index, 1)
-}
+const removerTarefa = (index: number) => {
+  tarefas.value.splice(index, 1);
+};
 </script>
