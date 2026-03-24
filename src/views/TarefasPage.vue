@@ -1,4 +1,3 @@
-
 <template>
 <IonPage>
 
@@ -24,15 +23,12 @@
           v-model="novaTarefa"
           placeholder="Ex: Estudar Vue.js"
           :clear-input="true"
-          :error-text="erroTarefa"
-          :class="{ 'ion-invalid ion-touched': erroTarefa }"
         />
 
         <IonButton
           expand="block"
           color="primary"
-          fill="solid"
-          @click="adicionarTarefa"
+          @click="adicionarNova"
         >
           <IonIcon :icon="addOutline" slot="start"/>
           Adicionar
@@ -41,48 +37,40 @@
       </IonCardContent>
     </IonCard>
 
+    <!-- BUSCA -->
+    <IonCard>
+      <IonCardContent>
+        <IonInput
+          v-model="busca"
+          placeholder="Buscar tarefa..."
+        />
+      </IonCardContent>
+    </IonCard>
+
     <!-- CARD LISTA -->
     <IonCard>
 
       <IonCardHeader>
         <IonCardTitle>
-          Minhas Tarefas ({{ tarefas.length }})
+          Minhas Tarefas ({{ filtradas.length }})
         </IonCardTitle>
       </IonCardHeader>
 
       <IonCardContent>
 
-        <p v-if="!tarefas.length" class="ion-text-center ion-padding">
-          Nenhuma tarefa cadastrada.
+        <p v-if="!filtradas.length" class="ion-text-center ion-padding">
+          Nenhuma tarefa encontrada.
         </p>
 
-        <IonList v-else>
-
-          <IonItem
-            v-for="(t, i) in tarefas"
-            :key="i"
-          >
-            <IonIcon
-              slot="start"
-              :icon="checkmarkCircleOutline"
-            />
-
-            <IonLabel>
-              {{ t }}
-            </IonLabel>
-
-            <IonButton
-              slot="end"
-              fill="clear"
-              color="danger"
-              @click="removerTarefa(i)"
-            >
-              <IonIcon :icon="trashOutline"/>
-            </IonButton>
-
-          </IonItem>
-
-        </IonList>
+        <div v-else>
+          <CardTarefa
+            v-for="t in filtradas"
+            :key="t.id"
+            :tarefa="t"
+            @remover="remover"
+            @concluir="concluir"
+          />
+        </div>
 
       </IonCardContent>
 
@@ -94,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 import {
   IonPage,
@@ -102,9 +90,6 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
   IonInput,
   IonButton,
   IonIcon,
@@ -114,23 +99,27 @@ import {
   IonCardContent
 } from "@ionic/vue";
 
-import { addOutline, trashOutline, checkmarkCircleOutline } from "ionicons/icons";
+import { addOutline } from "ionicons/icons";
 
+// ✅ IMPORTS NOVOS
+import { useTarefas } from "../composables/useTarefas";
+import CardTarefa from "../components/CardTarefa.vue";
+
+// ✅ COMPOSABLE
+const {
+  busca,
+  filtradas,
+  adicionar,
+  remover,
+  concluir
+} = useTarefas();
+
+// INPUT
 const novaTarefa = ref("");
-const tarefas = ref<string[]>([]);
 
-const erroTarefa = computed(() =>
-  !novaTarefa.value.trim() ? "Campo obrigatório" : ""
-);
-
-const adicionarTarefa = () => {
-  if (!novaTarefa.value.trim()) return;
-
-  tarefas.value.push(novaTarefa.value);
+// FUNÇÃO ADD
+function adicionarNova() {
+  adicionar(novaTarefa.value);
   novaTarefa.value = "";
-};
-
-const removerTarefa = (index: number) => {
-  tarefas.value.splice(index, 1);
-};
+}
 </script>
