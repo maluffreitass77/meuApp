@@ -1,96 +1,125 @@
 <template>
-<ion-page>
+<IonPage>
 
-<ion-header>
-  <ion-toolbar>
+  <IonHeader>
+    <IonToolbar>
+      <IonTitle>Mini App de Tarefas</IonTitle>
+    </IonToolbar>
+  </IonHeader>
 
-    <ion-buttons slot="start">
-      <ion-back-button default-href="/" />
-    </ion-buttons>
+  <IonContent class="ion-padding">
 
-    <ion-title>Tarefas</ion-title>
+    <!-- CARD NOVA TAREFA -->
+    <IonCard>
+      <IonCardHeader>
+        <IonCardTitle>Nova Tarefa</IonCardTitle>
+      </IonCardHeader>
 
-  </ion-toolbar>
-</ion-header>
+      <IonCardContent>
 
-<ion-content class="ion-padding">
+        <IonInput
+          label="Nome da tarefa"
+          label-placement="floating"
+          v-model="novaTarefa"
+          placeholder="Ex: Estudar Vue.js"
+          :clear-input="true"
+        />
 
-  <!-- Campo para nova tarefa -->
+        <IonButton
+          expand="block"
+          color="primary"
+          @click="adicionarNova"
+        >
+          <IonIcon :icon="addOutline" slot="start"/>
+          Adicionar
+        </IonButton>
 
-  <ion-item>
-    <ion-input
-      v-model="novaTarefa"
-      placeholder="Digite uma tarefa">
-    </ion-input>
-  </ion-item>
+      </IonCardContent>
+    </IonCard>
 
-  <ion-button expand="block" @click="adicionarTarefa">
-    Adicionar
-  </ion-button>
+    <!-- BUSCA -->
+    <IonCard>
+      <IonCardContent>
+        <IonInput
+          v-model="busca"
+          placeholder="Buscar tarefa..."
+        />
+      </IonCardContent>
+    </IonCard>
 
-  <!-- Estado vazio -->
+    <!-- CARD LISTA -->
+    <IonCard>
 
-  <p v-if="tarefas.length === 0">
-    Nenhuma tarefa cadastrada. Adicione a primeira!
-  </p>
+      <IonCardHeader>
+        <IonCardTitle>
+          Minhas Tarefas ({{ filtradas.length }})
+        </IonCardTitle>
+      </IonCardHeader>
 
-  <!-- Lista de tarefas -->
+      <IonCardContent>
 
-  <ion-list v-else>
+        <p v-if="!filtradas.length" class="ion-text-center ion-padding">
+          Nenhuma tarefa encontrada.
+        </p>
 
-    <ion-item v-for="(tarefa, index) in tarefas" :key="index">
+        <div v-else>
+          <CardTarefa
+            v-for="t in filtradas"
+            :key="t.id"
+            :tarefa="t"
+            @remover="remover"
+            @concluir="concluir"
+          />
+        </div>
 
-      <ion-label>
-        {{ tarefa }}
-      </ion-label>
+      </IonCardContent>
 
-      <ion-button
-        color="danger"
-        fill="clear"
-        @click="removerTarefa(index)">
-        Remover
-      </ion-button>
+    </IonCard>
 
-    </ion-item>
+  </IonContent>
 
-  </ion-list>
-
-</ion-content>
-
-</ion-page>
+</IonPage>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+
 import {
-IonPage,
-IonHeader,
-IonToolbar,
-IonTitle,
-IonContent,
-IonItem,
-IonInput,
-IonButton,
-IonList,
-IonLabel,
-IonButtons,
-IonBackButton
-} from '@ionic/vue'
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonInput,
+  IonButton,
+  IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent
+} from "@ionic/vue";
 
-import { ref } from 'vue'
+import { addOutline } from "ionicons/icons";
 
-const novaTarefa = ref('')
-const tarefas = ref<string[]>([])
+// ✅ IMPORTS NOVOS
+import { useTarefas } from "../composables/useTarefas";
+import CardTarefa from "../components/CardTarefa.vue";
 
-const adicionarTarefa = () => {
+// ✅ COMPOSABLE
+const {
+  busca,
+  filtradas,
+  adicionar,
+  remover,
+  concluir
+} = useTarefas();
 
-  if (novaTarefa.value.trim() === '') return
+// INPUT
+const novaTarefa = ref("");
 
-  tarefas.value.push(novaTarefa.value)
-
-  novaTarefa.value = ''
-}
-
-const removerTarefa = (index:number) => {
-  tarefas.value.splice(index, 1)
+// FUNÇÃO ADD
+function adicionarNova() {
+  adicionar(novaTarefa.value);
+  novaTarefa.value = "";
 }
 </script>
